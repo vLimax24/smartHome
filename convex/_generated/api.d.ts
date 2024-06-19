@@ -15,6 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as tasks from "../tasks.js";
+import type * as task_instances from "../task_instances.js";
 import type * as task_schedules from "../task_schedules.js";
 import type * as users from "../users.js";
 
@@ -28,6 +29,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   tasks: typeof tasks;
+  task_instances: typeof task_instances;
   task_schedules: typeof task_schedules;
   users: typeof users;
 }>;

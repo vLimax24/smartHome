@@ -17,4 +17,10 @@ export default defineSchema({
     user: v.id("users"),
     frequency: v.number(),
   }),
+  task_instances: defineTable({
+    schedule: v.id("task_schedules"),
+    user: v.id("users"),
+    date: v.string(),
+    status: v.string(),
+  }),
 });
