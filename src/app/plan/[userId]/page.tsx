@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -46,10 +46,10 @@ const TaskDisplay = ({ params }: { params: { userId: string } }) => {
   const createNewInstance = useMutation(api.task_instances.createTaskInstance);
 
   useEffect(() => {
-    if (dailyTasksQuery) {
+    if (dailyTasksQuery && dailyTasksQuery !== dailyTasks) {
       setDailyTasks(dailyTasksQuery);
     }
-  }, [dailyTasksQuery]);
+  }, [dailyTasksQuery, dailyTasks]);
 
   useEffect(() => {
     if (dailyTasks.length > 0) {
@@ -61,9 +61,12 @@ const TaskDisplay = ({ params }: { params: { userId: string } }) => {
     }
   }, [dailyTasks]);
 
-  const handleTaskCompletion = (taskId: string, isCompleted: boolean) => {
-    setCompletedStatuses((prev) => ({ ...prev, [taskId]: isCompleted }));
-  };
+  const handleTaskCompletion = useCallback(
+    (taskId: string, isCompleted: boolean) => {
+      setCompletedStatuses((prev) => ({ ...prev, [taskId]: isCompleted }));
+    },
+    []
+  );
 
   const areAllTasksCompleted = Object.values(completedStatuses).every(
     (status) => status
@@ -73,10 +76,9 @@ const TaskDisplay = ({ params }: { params: { userId: string } }) => {
     <div className="flex flex-col">
       {/* Top navigation */}
       <div className="flex items-center justify-start p-4">
-        {/* Back button */}
         <Link href="/" className="flex items-center space-x-2">
           <ChevronLeft size={24} />
-          <span>Back</span>
+          <span>Zurück</span>
         </Link>
       </div>
 
@@ -106,7 +108,7 @@ const TaskDisplay = ({ params }: { params: { userId: string } }) => {
             <Button
               className="flex gap-2 w-1/4 mt-16 h-12 border-blue-600 bg-transparent border-2 text-blue-600 hover:bg-blue-600 hover:text-white"
               onClick={() => {
-                dailyTasks.map(async (schedule) => {
+                dailyTasks.forEach(async (schedule) => {
                   await createNewInstance({
                     date: new Date().toISOString(),
                     status: "completed",
@@ -152,7 +154,7 @@ const Task: React.FC<TaskProps> = ({
     if (isCompletedQuery) {
       onCompletionStatusChange(scheduleId, isCompleted);
     }
-  }, [isCompletedQuery, scheduleId, onCompletionStatusChange, isCompleted]);
+  }, [isCompletedQuery, scheduleId, onCompletionStatusChange]);
 
   return (
     <div className="flex flex-col items-center">
